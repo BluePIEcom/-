@@ -9,7 +9,7 @@
 共享的礁盘就是那套 channel，而 digest 是洋流带过来的消息。MCP 的服务标识保持 `shared-memory`
 不变，那是稳定的接线口，不随项目名变。</sub>
 
-[![tests](https://img.shields.io/badge/tests-10%20passing-brightgreen)](#开发与测试)
+[![CI](https://github.com/BluePIEcom/dsh-reef/actions/workflows/ci.yml/badge.svg)](https://github.com/BluePIEcom/dsh-reef/actions/workflows/ci.yml)
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
 ---
