@@ -1,0 +1,5 @@
+{
+  "statePath": "/absolute/path/to/your-plugin/state/snapshot.json",
+  "limit": 8,
+  "maxChars": 120
+}

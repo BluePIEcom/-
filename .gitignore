@@ -1,0 +1,7 @@
+node_modules/
+*.log
+.DS_Store
+# 安装脚本生成的运行期文件（个人路径 + 本地记忆），不入库
+config.json
+# 共享记忆目录默认不提交（里面有运行期数据）
+shared-memory/

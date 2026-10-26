@@ -1,0 +1,4 @@
+# 统一换行，避免 Windows 提交把整个仓库变成 CRLF 差异
+* text=auto eol=lf
+*.bat text eol=crlf
+*.cmd text eol=crlf
