@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// dsh-shared-memory —— 多插件共享记忆的 MCP server（stdio）。
+// dsh-reef —— 多插件共享记忆的 MCP server（stdio）。
 //
 // 暴露四类工具：
 //   memory_read                      读共享记忆（带固定信任横幅）

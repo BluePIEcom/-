@@ -1,8 +1,8 @@
 {
-  "name": "dsh-shared-memory",
+  "name": "dsh-reef",
   "version": "0.1.0",
   "private": false,
-  "description": "Shared memory + on-demand digest tools for multi-plugin DSH agents: trust is decided by the file, not by who claims it.",
+  "description": "dsh-reef: a shared reef for DSH agents — trust-labeled memory plus on-demand digest tools across plugins.",
   "type": "module",
   "license": "MIT",
   "engines": {
@@ -14,7 +14,8 @@
     "mcp",
     "multi-agent",
     "shared-memory",
-    "prompt-injection"
+    "prompt-injection",
+    "multi-plugin"
   ],
   "main": "src/server.mjs",
   "scripts": {

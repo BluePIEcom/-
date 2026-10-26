@@ -131,11 +131,11 @@ const SAFE_EXACT = new Set(['memory_read', 'digest_list', 'digest_read', 'memory
 最后采用的是**注释标记区块**：
 
 ```yaml
-# === dsh-shared-memory BEGIN ===
+# === dsh-reef BEGIN ===
 - insert:
     - id: mcp-shared-memory
       ...
-# === dsh-shared-memory END ===
+# === dsh-reef END ===
 ```
 
 只替换这两个标记之间的内容，块外一个字节都不碰；首次写入前还会留一份带时间戳的备份。

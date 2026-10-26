@@ -82,8 +82,8 @@ for (const c of config.channels ?? []) {
 const q = (s) => `'${String(s).replace(/'/g, "''")}'`
 const nodePath = process.env.DSH_NODE || process.execPath
 const block = [
-  '# === dsh-shared-memory BEGIN ===',
-  '# 由 dsh-shared-memory/scripts/install.mjs 维护；整段会被替换，请勿手改区块内部。',
+  '# === dsh-reef BEGIN ===',
+  '# 由 dsh-reef/scripts/install.mjs 维护；整段会被替换，请勿手改区块内部。',
   '- insert:',
   '    - id: mcp-shared-memory',
   "      name: '@deepseek-ai/dsh-mcp-client'",
@@ -95,13 +95,13 @@ const block = [
   `          - ${q(serverPath)}`,
   '          - --config',
   `          - ${q(configPath)}`,
-  '# === dsh-shared-memory END ===',
+  '# === dsh-reef END ===',
 ].join('\n')
 
 // 3) 替换/追加区块（块外内容不动）
 const original = fs.existsSync(patchFile) ? fs.readFileSync(patchFile, 'utf8').replace(/^\uFEFF/, '') : ''
-const begin = '# === dsh-shared-memory BEGIN ==='
-const end = '# === dsh-shared-memory END ==='
+const begin = '# === dsh-reef BEGIN ==='
+const end = '# === dsh-reef END ==='
 let next
 const b = original.indexOf(begin)
 const e = original.indexOf(end)

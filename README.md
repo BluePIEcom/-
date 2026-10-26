@@ -1,7 +1,13 @@
-# dsh-shared-memory
+# dsh-reef
 
-> 给 DSH（DeepSeek Harness）里**多个插件 / 多个会话的 agent** 一套共用的记忆与"按需查询"通道。
+> 给 DSH（DeepSeek Harness）里**多个插件 / 多个会话的 agent** 一块共同生长的"礁"：
+> 共用的记忆、带信任级别的通道，以及随时可按需查询的"另一边近况"。
+>
 > 核心主张只有一句：**信任级别由文件决定，不由调用方声明。**
+
+<sub>名字取自珊瑚礁：礁不是造出来的，是一层层长出来的——记忆也是。每条鱼（agent）有自己的洞穴，
+共享的礁盘就是那套 channel，而 digest 是洋流带过来的消息。MCP 的服务标识保持 `shared-memory`
+不变，那是稳定的接线口，不随项目名变。</sub>
 
 [![tests](https://img.shields.io/badge/tests-10%20passing-brightgreen)](#开发与测试)
 [![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
@@ -43,8 +49,8 @@ DSH 里每安装一个插件（B 站刷视频的、QQ 聊天的、监控网页�
 前置：DSH 已至少启动过一次（`~/.dsh/profiles/<profile>/` 存在），Node ≥ 22.13。
 
 ```bash
-git clone <this-repo> dsh-shared-memory
-cd dsh-shared-memory
+git clone <this-repo> dsh-reef
+cd dsh-reef
 pnpm install          # 或 npm install
 
 # 注册 MCP 到 DSH profile（profile 名按你的实际情况改：desktop / web / tui…）
@@ -242,7 +248,7 @@ MIT，见 [LICENSE](LICENSE)。
 
 ## English summary
 
-`dsh-shared-memory` gives multiple DSH agents (one per plugin/session) a shared, **trust-labeled**
+`dsh-reef` gives multiple DSH agents (one per plugin/session) a shared, **trust-labeled**
 memory store plus **on-demand digest tools** to peek at what another plugin is doing.
 
 The one rule: **trust is decided by the file, never by the caller.** Third-party writes land in an

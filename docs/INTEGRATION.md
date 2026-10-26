@@ -5,8 +5,8 @@
 `scripts/install.mjs` 会在 `$DSH_HOME/profiles/<profile>/cordis.patch.yml` 末尾写入（或替换）这样一块：
 
 ```yaml
-# === dsh-shared-memory BEGIN ===
-# 由 dsh-shared-memory/scripts/install.mjs 维护；整段会被替换，请勿手改区块内部。
+# === dsh-reef BEGIN ===
+# 由 dsh-reef/scripts/install.mjs 维护；整段会被替换，请勿手改区块内部。
 - insert:
     - id: mcp-shared-memory
       name: '@deepseek-ai/dsh-mcp-client'
@@ -18,7 +18,7 @@
           - '<仓库>/src/server.mjs'
           - --config
           - '<仓库>/config.json'
-# === dsh-shared-memory END ===
+# === dsh-reef END ===
 ```
 
 关键点：
@@ -94,7 +94,7 @@ const SAFE_EXACT = new Set([
 
 ## 6. 卸载
 
-删掉 `cordis.patch.yml` 里 `# === dsh-shared-memory BEGIN ===` 到 `END` 之间的整块，重启 DSH 即可。
+删掉 `cordis.patch.yml` 里 `# === dsh-reef BEGIN ===` 到 `END` 之间的整块，重启 DSH 即可。
 记忆目录是普通文件，自行保留或删除。
 
 ## 7. 常见问题
