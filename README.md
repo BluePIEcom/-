@@ -49,7 +49,7 @@ DSH 里每安装一个插件（B 站刷视频的、QQ 聊天的、监控网页�
 前置：DSH 已至少启动过一次（`~/.dsh/profiles/<profile>/` 存在），Node ≥ 22.13。
 
 ```bash
-git clone <this-repo> dsh-reef
+git clone https://github.com/BluePIEcom/dsh-reef.git
 cd dsh-reef
 pnpm install          # 或 npm install
 
