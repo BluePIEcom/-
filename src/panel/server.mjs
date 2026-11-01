@@ -169,11 +169,24 @@ function authed(req, url) {
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://127.0.0.1:${port}`)
 
-  // 静态页
-  if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) {
-    const html = fs.readFileSync(path.join(__dirname, 'index.html'))
-    res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' })
-    res.end(html)
+  // 静态资源（公开、无敏感内容）：页面 / PWA 清单 / 图标
+  const STATIC = {
+    '/': ['index.html', 'text/html; charset=utf-8'],
+    '/index.html': ['index.html', 'text/html; charset=utf-8'],
+    '/manifest.webmanifest': ['manifest.webmanifest', 'application/manifest+json; charset=utf-8'],
+    '/icon-192.png': ['icon-192.png', 'image/png'],
+    '/icon-512.png': ['icon-512.png', 'image/png'],
+  }
+  const hit = STATIC[url.pathname]
+  if (req.method === 'GET' && hit) {
+    try {
+      const buf = fs.readFileSync(path.join(__dirname, hit[0]))
+      res.writeHead(200, { 'content-type': hit[1], 'cache-control': 'no-cache' })
+      res.end(buf)
+    } catch {
+      res.writeHead(404)
+      res.end('not found')
+    }
     return
   }
 

@@ -1,0 +1,15 @@
+{
+  "name": "dsh-reef · 记忆面板",
+  "short_name": "reef 面板",
+  "description": "给多个 DSH agent 的共享记忆：按天浏览、搜索、摘要预览与追加。",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#faf7f0",
+  "theme_color": "#faf7f0",
+  "lang": "zh-CN",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
