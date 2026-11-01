@@ -76,7 +76,7 @@ node scripts/selftest.mjs
 ```
 
 自己发版时用 `node scripts/build-release.mjs`（会用 `--node-linker=hoisted` 重新装一份干净依赖，
-避免把 pnpm 的符号链接打进去），产物在 `dist/`。
+避免把 pnpm 的符号链接打进去），产物在 `dist/`。完整流程见 **[docs/RELEASING.md](docs/RELEASING.md)**。
 
 `install.mjs` 会做三件事，并且是**幂等**的：
 
