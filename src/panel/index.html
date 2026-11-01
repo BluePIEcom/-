@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dsh-reef · 记忆面板</title>
+<style>
+  :root {
+    --bg: #faf7f0; --panel: #fffdf8; --ink: #1a262c; --sub: #5c686e;
+    --mute: #929ca0; --line: #ded8cc; --coral: #e27a58; --teal: #2e8b9a; --olive: #8c7830;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 15px/1.6 "Segoe UI", "Microsoft YaHei", system-ui, sans-serif; }
+  header { display: flex; align-items: baseline; gap: 16px; padding: 22px 28px 14px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  h1 { font-size: 22px; margin: 0; letter-spacing: .2px; }
+  .path { color: var(--mute); font-family: Consolas, monospace; font-size: 12.5px; }
+  nav { display: flex; gap: 6px; padding: 14px 28px 0; flex-wrap: wrap; }
+  nav button { border: 1px solid var(--line); background: transparent; color: var(--sub);
+               padding: 7px 14px; border-radius: 999px; cursor: pointer; font-size: 14px; }
+  nav button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+  main { padding: 18px 28px 60px; max-width: 1180px; }
+  .row { display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+  .day { cursor: pointer; transition: transform .12s; }
+  .day:hover { transform: translateY(-1px); border-color: var(--coral); }
+  .day b { font-size: 17px; }
+  .count { color: var(--mute); font-size: 13px; }
+  .tag { display: inline-block; font-size: 12px; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--sub); }
+  .t-trusted { color: var(--teal); border-color: var(--teal); }
+  .t-self { color: var(--olive); border-color: var(--olive); }
+  .t-untrusted { color: var(--coral); border-color: var(--coral); }
+  .entry { border-left: 3px solid var(--line); padding: 8px 0 8px 14px; margin: 12px 0; }
+  .entry.untrusted { border-left-color: var(--coral); }
+  .entry.self { border-left-color: var(--olive); }
+  .entry.trusted { border-left-color: var(--teal); }
+  .meta { font-size: 12.5px; color: var(--mute); margin-bottom: 4px; }
+  pre { white-space: pre-wrap; word-break: break-word; margin: 0; font: 13.5px/1.55 Consolas, monospace; color: var(--sub); }
+  textarea { width: 100%; min-height: 120px; font: 13.5px/1.55 Consolas, monospace; padding: 10px; border: 1px solid var(--line);
+             border-radius: 10px; background: #fff; color: var(--ink); resize: vertical; }
+  input[type=text] { padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; width: 320px; background: #fff; }
+  button.act { border: 1px solid var(--line); background: #fff; padding: 8px 14px; border-radius: 10px; cursor: pointer; }
+  button.act.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+  button.act.danger { color: var(--coral); border-color: var(--coral); }
+  .hint { color: var(--mute); font-size: 13px; }
+  .err { color: var(--coral); }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<header>
+  <h1>dsh-reef</h1>
+  <span class="path" id="memDir"></span>
+  <span style="flex:1"></span>
+  <span class="hint" id="status"></span>
+</header>
+
+<nav>
+  <button data-tab="days" class="on">按天</button>
+  <button data-tab="channels">频道</button>
+  <button data-tab="search">搜索</button>
+  <button data-tab="digests">摘要</button>
+  <button data-tab="append">追加</button>
+</nav>
+
+<main>
+  <section id="tab-days">
+    <div class="row" style="margin-bottom:14px">
+      <span class="hint">每天记了些什么。点一天看详情；删除前会先备份到 archive/。</span>
+    </div>
+    <div class="grid" id="dayGrid"></div>
+    <div id="dayDetail" class="hidden" style="margin-top:22px">
+      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:8px">
+        <h3 id="dayTitle" style="margin:0"></h3>
+        <button class="act danger" id="delDayBtn">删除这一天（先备份）</button>
+      </div>
+      <div id="dayEntries"></div>
+    </div>
+  </section>
+
+  <section id="tab-channels" class="hidden">
+    <div class="row" style="margin-bottom:12px">
+      <select id="chSelect" class="act"></select>
+      <span class="hint">只读 / 可写在频道卡片上标注；面板不会改动信任级别。</span>
+    </div>
+    <div id="chBody" class="card"><pre>选择左侧频道…</pre></div>
+  </section>
+
+  <section id="tab-search" class="hidden">
+    <div class="row" style="margin-bottom:12px">
+      <input type="text" id="q" placeholder="搜关键词（跨所有频道）">
+      <button class="act primary" id="doSearch">搜索</button>
+    </div>
+    <div id="searchBody"></div>
+  </section>
+
+  <section id="tab-digests" class="hidden">
+    <div class="grid" id="digestGrid"></div>
+    <div id="digestBody" class="card hidden" style="margin-top:14px"><pre></pre></div>
+  </section>
+
+  <section id="tab-append" class="hidden">
+    <div class="card">
+      <div class="row" style="margin-bottom:10px">
+        <select id="apChannel" class="act"></select>
+        <span class="hint">只能追加到「可写」频道；untrusted 会被自动引用化。</span>
+      </div>
+      <textarea id="apText" placeholder="写一条记录…"></textarea>
+      <div class="row" style="margin-top:10px">
+        <button class="act primary" id="doAppend">追加</button>
+        <span id="apResult" class="hint"></span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+const params = new URLSearchParams(location.search);
+let token = params.get('token') || sessionStorage.getItem('reefToken') || '';
+if (token) sessionStorage.setItem('reefToken', token);
+
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const api = async (p, opt = {}) => {
+  const u = new URL(p, location.origin);
+  u.searchParams.set('token', token);
+  const r = await fetch(u, opt);
+  const j = await r.json().catch(() => ({ ok: false, error: '响应不是 JSON' }));
+  if (!r.ok) throw new Error(j.error || ('HTTP ' + r.status));
+  return j;
+};
+const setStatus = (t, bad) => { const el = $('#status'); el.textContent = t; el.className = bad ? 'err' : 'hint'; };
+
+document.querySelectorAll('nav button').forEach((b) => b.addEventListener('click', () => {
+  document.querySelectorAll('nav button').forEach((x) => x.classList.toggle('on', x === b));
+  ['days', 'channels', 'search', 'digests', 'append'].forEach((t) => $('#tab-' + t).classList.toggle('hidden', t !== b.dataset.tab));
+}));
+
+let writable = [];
+let currentDay = '';
+
+async function boot() {
+  if (!token) { setStatus('地址栏缺少 ?token=…', true); return; }
+  try {
+    const o = await api('/api/overview');
+    $('#memDir').textContent = o.memoryDir;
+    writable = o.channels.filter((c) => c.writable);
+    const chSel = $('#chSelect');
+    const apSel = $('#apChannel');
+    for (const c of o.channels) {
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = `${c.title}（${c.trust}${c.writable ? ' · 可写' : ' · 只读'}）`;
+      chSel.appendChild(opt);
+      if (c.writable) apSel.appendChild(opt.cloneNode(true));
+    }
+    chSel.addEventListener('change', () => loadChannel(chSel.value));
+    await loadDays();
+    await loadDigests(o.adapters);
+    setStatus('已连接');
+  } catch (e) { setStatus(e.message, true); }
+}
+
+async function loadDays() {
+  const { days } = await api('/api/days');
+  const grid = $('#dayGrid');
+  grid.innerHTML = '';
+  if (!days.length) { grid.innerHTML = '<div class="hint">还没有任何记录。</div>'; return; }
+  for (const d of days) {
+    const el = document.createElement('div');
+    el.className = 'card day';
+    const chs = Object.entries(d.byChannel).map(([k, v]) => `${k}×${v}`).join(' · ');
+    el.innerHTML = `<b>${esc(d.date)}</b><div class="count">${d.count} 条 · ${esc(chs)}</div>`;
+    el.onclick = () => openDay(d.date);
+    grid.appendChild(el);
+  }
+}
+
+async function openDay(date) {
+  currentDay = date;
+  const { entries } = await api('/api/day?date=' + encodeURIComponent(date));
+  $('#dayTitle').textContent = date + ' · ' + entries.length + ' 条';
+  $('#dayDetail').classList.remove('hidden');
+  $('#dayEntries').innerHTML = entries.map((e) => `
+    <div class="entry ${e.trust}">
+      <div class="meta">${esc(e.time)} · ${esc(e.channelTitle)} <span class="tag t-${e.trust}">${e.trust}</span></div>
+      <pre>${esc(e.text.replace(/^### .*\n/, ''))}</pre>
+    </div>`).join('') || '<div class="hint">这一天没有记录。</div>';
+}
+
+$('#delDayBtn').onclick = async () => {
+  if (!currentDay) return;
+  if (!confirm(`确定删除 ${currentDay} 的全部可写频道记录？\n（会先备份到 memoryDir/archive/）`)) return;
+  try {
+    const r = await api('/api/delete-day', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ date: currentDay, confirm: true }),
+    });
+    const sum = r.touched.map((t) => `${t.channel} 删 ${t.removed} 条`).join('，') || '没有可删的记录';
+    alert(`已处理：${sum}\n备份在 ${r.backupDir}`);
+    await loadDays();
+    $('#dayDetail').classList.add('hidden');
+  } catch (e) { alert('删除失败：' + e.message); }
+};
+
+async function loadChannel(id) {
+  const body = $('#chBody');
+  body.innerHTML = '<pre>加载中…</pre>';
+  try {
+    const c = await api('/api/channel?id=' + encodeURIComponent(id) + '&tail=400');
+    body.innerHTML = `<div class="meta">${esc(c.title)} <span class="tag t-${c.trust}">${c.trust}</span></div><pre>${esc(c.text)}</pre>`;
+  } catch (e) { body.innerHTML = `<pre class="err">${esc(e.message)}</pre>`; }
+}
+
+$('#doSearch').onclick = async () => {
+  const q = $('#q').value.trim();
+  const body = $('#searchBody');
+  if (!q) return;
+  try {
+    const { hits } = await api('/api/search?q=' + encodeURIComponent(q));
+    body.innerHTML = hits.length ? hits.map((h) => `
+      <div class="entry ${h.trust}">
+        <div class="meta">${esc(h.date)} ${esc(h.time)} · ${esc(h.channelTitle)} <span class="tag t-${h.trust}">${h.trust}</span></div>
+        <pre>${esc(h.snippet)}</pre>
+      </div>`).join('') : '<div class="hint">没有匹配。</div>';
+  } catch (e) { body.innerHTML = `<div class="err">${esc(e.message)}</div>`; }
+};
+
+async function loadDigests(adapters) {
+  const grid = $('#digestGrid');
+  grid.innerHTML = '';
+  if (!adapters.length) { grid.innerHTML = '<div class="hint">还没有适配器（把 .mjs 放到 memoryDir/adapters/）。</div>'; return; }
+  for (const a of adapters) {
+    const el = document.createElement('div');
+    el.className = 'card day';
+    el.innerHTML = `<b>${esc(a.title)}</b><div class="count">${esc(a.id)} · ${esc(a.trust)}</div>`;
+    el.onclick = async () => {
+      const box = $('#digestBody');
+      box.classList.remove('hidden');
+      box.innerHTML = '<pre>加载中…</pre>';
+      try {
+        const d = await api('/api/digest?id=' + encodeURIComponent(a.id));
+        box.innerHTML = `<div class="meta">${esc(d.title)} <span class="tag t-${d.trust}">${d.trust}</span></div><pre>${esc(d.text)}</pre>`;
+      } catch (e) { box.innerHTML = `<pre class="err">${esc(e.message)}</pre>`; }
+    };
+    grid.appendChild(el);
+  }
+}
+
+$('#doAppend').onclick = async () => {
+  const channel = $('#apChannel').value;
+  const text = $('#apText').value.trim();
+  if (!channel || !text) return;
+  try {
+    const r = await api('/api/append', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ channel, text }),
+    });
+    $('#apResult').textContent = r.ok ? `✓ 已追加到 ${r.channel}（${r.appendedChars} 字）` : '✗ ' + r.error;
+    if (r.ok) { $('#apText').value = ''; await loadDays(); }
+  } catch (e) { $('#apResult').textContent = '✗ ' + e.message; }
+};
+
+boot();
+</script>
+</body>
+</html>

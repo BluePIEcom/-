@@ -22,7 +22,8 @@
     "start": "node src/server.mjs",
     "selftest": "node scripts/selftest.mjs",
     "install-mcp": "node scripts/install.mjs",
-    "test": "node --test tests/"
+    "test": "node --test tests/",
+    "panel": "node src/panel/server.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
