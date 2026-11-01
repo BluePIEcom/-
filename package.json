@@ -1,6 +1,6 @@
 {
   "name": "dsh-reef",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": false,
   "description": "dsh-reef: a shared reef for DSH agents — trust-labeled memory plus on-demand digest tools across plugins.",
   "type": "module",
@@ -23,7 +23,9 @@
     "selftest": "node scripts/selftest.mjs",
     "install-mcp": "node scripts/install.mjs",
     "test": "node --test tests/",
-    "panel": "node src/panel/server.mjs"
+    "panel": "node src/panel/server.mjs",
+    "wizard": "node scripts/install-wizard.mjs",
+    "build-release": "node scripts/build-release.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",

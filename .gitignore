@@ -7,3 +7,5 @@ config.json
 shared-memory/
 # 面板测试用的临时夹具
 .panel-test/
+# 发布打包产物
+dist/

@@ -48,6 +48,20 @@ DSH 里每安装一个插件（B 站刷视频的、QQ 聊天的、监控网页�
 
 前置：DSH 已至少启动过一次（`~/.dsh/profiles/<profile>/` 存在），Node ≥ 22.13。
 
+### 方式 A：下载安装包（不想碰命令行）
+
+去 [Releases](../../releases) 下载 `dsh-reef-v*-win.zip`，解压后**双击 `安装.cmd`**。
+向导会问你两件事：
+
+1. 程序装到哪（默认 `%LOCALAPPDATA%\dsh-reef`）
+2. 共享记忆存到哪（默认 `%USERPROFILE%\.dsh\reef-memory`）
+
+安装包**自带依赖**，不需要联网装 npm 包。装完重启一次 DSH，再用 `start-panel.cmd` 打开面板。
+
+> 安装包不含任何运行期数据：没有 `config.json`、没有记忆文件、没有令牌。
+
+### 方式 B：克隆仓库（想改代码）
+
 ```bash
 git clone https://github.com/BluePIEcom/dsh-reef.git
 cd dsh-reef
@@ -60,6 +74,9 @@ node scripts/install.mjs --profile desktop
 # 然后验证：
 node scripts/selftest.mjs
 ```
+
+自己发版时用 `node scripts/build-release.mjs`（会用 `--node-linker=hoisted` 重新装一份干净依赖，
+避免把 pnpm 的符号链接打进去），产物在 `dist/`。
 
 `install.mjs` 会做三件事，并且是**幂等**的：
 
